@@ -1,0 +1,46 @@
+services:
+
+#Map Server serving the seaice layer
+  mapserver:
+    image: ghcr.io/unis-svalbard-weather-information/swi-deegree3-mapserver:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SWI_DEEGREE_REST_API_KEY=swi_dev
+    volumes:
+      - ./data/degree/:/root/data
+    networks:
+      - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+#Service to cache the sea ice layer from cryo.met.no
+  seaice_cache:
+    image: ghcr.io/unis-svalbard-weather-information/swi-mapcache-seaice:latest
+    volumes:
+      - ./data/degree/:/swi/export
+    environment:
+      - SWI-SEAICE-LAYER-FILE-NAME=SWI_LatestIceChart/latest
+      - SWI-DEEGREE-URL=http://mapserver:8080
+      - SWI_DEEGREE_REST_API_KEY=swi_dev
+    depends_on:   
+      - mapserver
+    networks:
+      - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+#Elevation API to get elevation of requested points
+  elevation_api:
+    image: ghcr.io/unis-svalbard-weather-information/swi-elevationapi:latest
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./data/elevation:/code/data
+    networks:
+      - swi_network
+
+
+networks:
+  swi_network:
+    driver: bridge
