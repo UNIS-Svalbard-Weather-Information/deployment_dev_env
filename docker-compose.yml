@@ -10,14 +10,14 @@ services:
         - "443:443"
       volumes:
         - ./Caddyfile:/etc/caddy/Caddyfile
-      # depends_on:
-      #   - mapproxy-server
-      #   - elevation-api
+      depends_on:
+        - mapproxy-server
+        - elevation-api
       networks:
         - swi_network
       extra_hosts:
         - "host.docker.internal:host-gateway"
-        - "mapserver.localhost:host-gateway"  # Optional, but can help with local resolution
+        - "mapserver.localhost:host-gateway"  
 
 
 #Service to cache the sea ice layer from cryo.met.no for MapProxy
