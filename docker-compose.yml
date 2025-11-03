@@ -1,44 +1,112 @@
 services:
+# #Deegree Map Server serving the seaice layer
+#   deegree:
+#     image: ghcr.io/unis-svalbard-weather-information/swi-deegree3-mapserver:latest
+#     ports:
+#       - "8080:8080"
+#     environment:  
+#       - SWI_DEEGREE_REST_API_KEY=swi_dev
+#     volumes:
+#       - ./data/degree/:/root/data
+#     networks:
+#       - swi_network
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
 
-#Map Server serving the seaice layer
-  mapserver:
-    image: ghcr.io/unis-svalbard-weather-information/swi-deegree3-mapserver:latest
-    ports:
-      - "8080:8080"
-    environment:
-      - SWI_DEEGREE_REST_API_KEY=swi_dev
-    volumes:
-      - ./data/degree/:/root/data
-    networks:
-      - swi_network
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+# #Service to cache the sea ice layer from cryo.met.no for deegree
+#   seaice_cache:
+#     image: ghcr.io/unis-svalbard-weather-information/swi-mapcache-seaice:0.0.4
+#     volumes:
+#       - ./data/degree/:/swi/export
+#     environment:
+#       - SWI-SEAICE-LAYER-FILE-NAME=SWI_LatestIceChart/latest
+#       - SWI-DEEGREE-URL=http://deegree:8080
+#       - SWI_DEEGREE_REST_API_KEY=swi_dev
+#     depends_on:   
+#       - deegree
+#     networks:
+#       - swi_network
+#     extra_hosts:
+#       - "host.docker.internal:host-gateway"
 
-#Service to cache the sea ice layer from cryo.met.no
-  seaice_cache:
+# Reverse Proxy
+  caddy:
+      image: caddy:latest
+      container_name: caddy
+      restart: unless-stopped
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./Caddyfile:/etc/caddy/Caddyfile
+      # depends_on:
+      #   - mapproxy-server
+      #   - elevation-api
+      networks:
+        - swi_network
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+        - "mapserver.localhost:host-gateway"  # Optional, but can help with local resolution
+
+
+#Service to cache the sea ice layer from cryo.met.no for MapProxy
+  seaice_cache_mapproxy:
     image: ghcr.io/unis-svalbard-weather-information/swi-mapcache-seaice:latest
     volumes:
-      - ./data/degree/:/swi/export
-    environment:
-      - SWI-SEAICE-LAYER-FILE-NAME=SWI_LatestIceChart/latest
-      - SWI-DEEGREE-URL=http://mapserver:8080
-      - SWI_DEEGREE_REST_API_KEY=swi_dev
+      - ./data/mapproxy/data/latest_seaice:/swi/export
+      - ./data/mapproxy/metadata:/swi/metadata
     depends_on:   
-      - mapserver
+      - mapproxy-server
     networks:
       - swi_network
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+# Redis service for caching in MapProxy
+  redis:
+    image: redis:7.4-alpine
+    restart: always
+    # ports:
+      # - "6379:6379"
+    command: redis-server --save 20 1 --loglevel verbose --requirepass iamgreatpassword
+    networks:
+      - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+# MapProxy service serving the WMTS service
+  mapproxy-server:
+    image: ghcr.io/unis-svalbard-weather-information/swi-mapproxy:latest
+    # ports:
+    #   - "8080:8080"
+    volumes:
+      - ./data/mapproxy/data/:/mapproxy/data
+      - ./data/mapproxy/metadata/:/mapproxy/metadata
+      - ./data/mapproxy/cache/:/mapproxy/config/cache_data
+    environment:
+     - MAPPROXY_REDIS_HOST=redis
+     - MAPPROXY_REDIS_PORT=6379
+     - MAPPROXY_REDIS_USERNAME=default
+     - MAPPROXY_REDIS_PASSWORD=iamgreatpassword
+    depends_on:
+      - redis
+    networks:
+      - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
 #Elevation API to get elevation of requested points
-  elevation_api:
+  elevation-api:
     image: ghcr.io/unis-svalbard-weather-information/swi-elevationapi:latest
     ports:
-      - "8081:8080"
+      - "8185:8080"
     volumes:
       - ./data/elevation:/code/data
     networks:
       - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 
 networks:
