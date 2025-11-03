@@ -1,33 +1,4 @@
 services:
-# #Deegree Map Server serving the seaice layer
-#   deegree:
-#     image: ghcr.io/unis-svalbard-weather-information/swi-deegree3-mapserver:latest
-#     ports:
-#       - "8080:8080"
-#     environment:  
-#       - SWI_DEEGREE_REST_API_KEY=swi_dev
-#     volumes:
-#       - ./data/degree/:/root/data
-#     networks:
-#       - swi_network
-#     extra_hosts:
-#       - "host.docker.internal:host-gateway"
-
-# #Service to cache the sea ice layer from cryo.met.no for deegree
-#   seaice_cache:
-#     image: ghcr.io/unis-svalbard-weather-information/swi-mapcache-seaice:0.0.4
-#     volumes:
-#       - ./data/degree/:/swi/export
-#     environment:
-#       - SWI-SEAICE-LAYER-FILE-NAME=SWI_LatestIceChart/latest
-#       - SWI-DEEGREE-URL=http://deegree:8080
-#       - SWI_DEEGREE_REST_API_KEY=swi_dev
-#     depends_on:   
-#       - deegree
-#     networks:
-#       - swi_network
-#     extra_hosts:
-#       - "host.docker.internal:host-gateway"
 
 # Reverse Proxy
   caddy:
