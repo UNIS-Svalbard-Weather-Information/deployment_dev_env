@@ -4,7 +4,9 @@ This repository provide a Docker Compose to setup a developpment environnment wi
 
 It is important to note that the configuration is absolutly NOT deployment ready ! DO NOT USE IT for a deployment environnment.
 
-To serve the front end you must first build it directly from the swi-frontend repository.
+To serve the front end you must first build it directly from the swi-frontend repository and uncomment the corresponding part in nginx.conf and docker-compose.yml .
+
+Services marked as CRON correspond to container that would be run according a CRON schedule (everyday at 15:10 UTC for the seaice for example)
 
 This use NGINX as reverse proxy for the differents services :
 
