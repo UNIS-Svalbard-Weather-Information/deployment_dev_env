@@ -29,7 +29,7 @@ services:
 
 
 ##### CRON SERVICES #####
-#Service to cache the sea ice layer from cryo.met.no for MapProxy
+#Service to cache the sea ice layer from cryo.met.no for MapProxy. Prod : Cron to be run at 15:05 UTC weekdays
   CRON_seaice_cache_mapproxy:
     image: ghcr.io/unis-svalbard-weather-information/swi-mapcache-seaice:latest
     volumes:
@@ -42,6 +42,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+
+##### MAP SERVICES #####
 # Redis service for caching in MapProxy
   redis:
     image: redis:7.4-alpine
@@ -76,6 +78,8 @@ services:
       - "host.docker.internal:host-gateway"
 
 
+
+##### BACKEND API SERVICES #####
 #Elevation API to get elevation of requested points
   elevation-api:
     image: ghcr.io/unis-svalbard-weather-information/swi-elevationapi:latest
