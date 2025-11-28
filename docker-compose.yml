@@ -116,6 +116,18 @@ services:
       - "host.docker.internal:host-gateway"
 
 
+#Meteorological observations and forecast backend API
+  metobs-api:
+    image: ghcr.io/unis-svalbard-weather-information/swi-metobs-backend:3.0.0-dev03
+    # ports:
+    #   - "8185:8080"
+    volumes:
+      - ./data/metobs_cache:/swi/data
+    networks:
+      - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 networks:
   swi_network:
     driver: bridge
