@@ -118,7 +118,7 @@ services:
 
 #Meteorological observations and forecast backend API
   metobs-api:
-    image: ghcr.io/unis-svalbard-weather-information/swi-metobs-backend:3.0.0-dev03
+    image: ghcr.io/unis-svalbard-weather-information/swi-metobs-backend:3.0.0-dev05 
     # ports:
     #   - "8185:8080"
     volumes:
