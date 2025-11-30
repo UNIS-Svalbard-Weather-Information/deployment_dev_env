@@ -30,6 +30,7 @@ services:
 
 ##### CRON SERVICES #####
 # Service to cache the sea ice layer from cryo.met.no for MapProxy. Prod : Cron to be run at 15:05 UTC weekdays
+# Need to add a monitoring service to be be ping once the processed is done.
   CRON_seaice_cache_mapproxy:
     image: ghcr.io/unis-svalbard-weather-information/swi-mapcache-seaice:latest
     volumes:
@@ -43,6 +44,7 @@ services:
       - "host.docker.internal:host-gateway"
 
 # Service to cache the met observations from met.no. Prod: Cron to be run every 10 minutes
+# Need to add a monitoring service to be be ping once the processed is done.
   CRON_met_obs_cache:
     image: ghcr.io/unis-svalbard-weather-information/swi-metobs-caching:latest
     volumes:
@@ -56,6 +58,7 @@ services:
       - "host.docker.internal:host-gateway"
 
 # Service to cache the weather forecast from Arome Arctic (aa). Prod: Cron to be run at 1:30, 7:30, 13:30 and 19:30 UTC
+# Need to add a monitoring service to be be ping once the processed is done.
   CRON_aa_for_cache:
     image: ghcr.io/unis-svalbard-weather-information/swi-aromearctic-caching:latest
     volumes:
