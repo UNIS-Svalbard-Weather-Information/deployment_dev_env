@@ -13,3 +13,4 @@ This use NGINX as reverse proxy for the differents services :
 - `mapserver.localhost/demo` correspond to the MapProxy server serving the in house layer and caching differents layers from external providers
 - `api.localhost/oeapi/v1` provide the Open Elevation API for Svalbard based on NP DEM. See documentation at [Jorl17/open-elevation documentation](https://github.com/Jorl17/open-elevation/blob/master/docs/api.md).
 - `api.localhost/public/docs/` provide the swagger interface for the met observation and forecast
+- `api.localhost/tiles/docs` provide the swagger interface for titiller to tiles on fly the cog of weather map.

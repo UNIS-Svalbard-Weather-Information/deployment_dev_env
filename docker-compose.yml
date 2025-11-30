@@ -128,6 +128,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+#Tilling service for meteorological observations and forecast
+  titiller:
+    image: ghcr.io/unis-svalbard-weather-information/swi-titiller:latest
+    # ports:
+    #   - "8185:8080"
+    volumes:
+      - ./data/metobs_cache/forecast:/swi/data/forecast
+    networks:
+      - swi_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
 networks:
   swi_network:
     driver: bridge
