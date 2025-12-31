@@ -1,4 +1,5 @@
 services:
+  #Reverse proxy to forward the trafic to the good container
   nginx:
     image: nginx:alpine
     ports:
